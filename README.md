@@ -44,3 +44,24 @@ File Sorter was built as a practical Python automation project to make organizin
 ### Sorting Summary
 
 ![Sorting Summary](screenshots/sorting-summary.png)
+
+## Installation
+
+### Option 1: Run from Source
+
+
+1. Clone this repository.
+2. Make sure Python is installed on your computer.
+3. Open the project folder in your terminal.
+4. Run the application using:
+
+```bash
+python file-sorting.py
+```
+
+### Option 2: Run the Executable
+
+1. Go to the **Releases** section of this repository.
+2. Download `file-sorting.exe` from the latest release.
+3. Open the downloaded `.exe` file.
+4. File Sorter will launch automatically.
