@@ -15,7 +15,7 @@ summary_text = tk.StringVar()
 
 logging.basicConfig(
     filename="file_sorter.log",
-    level=logging.INFO
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
