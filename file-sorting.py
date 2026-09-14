@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import shutil
+import logging
 from tkinter import filedialog, messagebox
 
 window = tk.Tk()
@@ -11,6 +12,12 @@ location = tk.StringVar()
 status = tk.StringVar()
 
 summary_text = tk.StringVar()
+
+logging.basicConfig(
+    filename="file_sorter.log",
+    level=logging.INFO
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def main():
 
@@ -97,35 +104,41 @@ def sort_files(selected_location):
                 if extension == "":            
                     extension = "NO EXTENSION"
     
-                if not os.path.exists(os.path.join(selected_location, extension)):
-    
-                    try:
-                        os.mkdir(os.path.join(selected_location, extension))
-                    except:
-                        failed_folders.append(extension)
-                        continue
+                try:
+                    os.mkdir(os.path.join(selected_location, extension))
+                    logging.info(f"Created folder '{extension}'")
+
+                except FileExistsError:
+                    logging.debug("Folder already exists.")
+                    pass
+
+                except OSError as e:
+                    failed_folders.append((extension, str(e)))
+                    logging.error(f"Failed to create folder '{extension}': {e}")
+                    continue
     
                 file_source = os.path.join(selected_location, file)
                 file_destination = os.path.join(selected_location, extension, file)
     
-                if not os.path.exists(file_destination):
+                try:
+                    shutil.move(file_source, file_destination)
     
-                    try:
-                        shutil.move(file_source, file_destination)
+                    count += 1
     
-                        count += 1
-    
-                        if extension not in extensions:
-                            extensions[extension] = 1 
-                        else:
-                            extensions[extension] += 1
-    
-                    except:
-                        failed_files.append(file)
-                        continue
-    
-                else:
+                    if extension not in extensions:
+                        extensions[extension] = 1 
+                    else:
+                        extensions[extension] += 1
+
+                    logging.info(f"Moved {file} to {file_destination}")
+
+                except FileExistsError:
                     skip += 1
+    
+                except OSError as e:
+                    failed_files.append((file, str(e)))
+                    logging.error(f"Failed to move {file}: {e}")
+                    continue
 
     return count, skip, extensions, failed_folders, failed_files
 
