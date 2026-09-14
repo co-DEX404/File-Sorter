@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import argparse
 
 logging.basicConfig(
     filename="file_sorter.log",
@@ -66,3 +67,10 @@ def sort_files(selected_location):
                     continue
 
     return count, skip, extensions, failed_folders, failed_files
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Sort files into folders by extension.")
+    parser.add_argument("folder", help="Path to the folder to sort")
+    args = parser.parse_args()
+
+    sort_files(args.folder)
