@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from logic import sort_files
+import threading
 
 window = tk.Tk()
 window.config(bg="#092328")
@@ -10,6 +11,8 @@ location = tk.StringVar()
 status = tk.StringVar()
 
 summary_text = tk.StringVar()
+
+is_sorting = False
 
 def main():
 
@@ -77,6 +80,16 @@ def browse_clicked():
 
 def sort_clicked():
 
+    global is_sorting
+
+    if is_sorting:
+        proceed = messagebox.askyesno("File Sorter", "The folder is currently sorting. \n" \
+        "Proceeding again may result in ireversible damage to the files. \n" \
+        "Would you like to proceed?")
+
+        if not proceed:
+            return
+
     selected_location = location.get()
 
     if selected_location == "":
@@ -92,14 +105,28 @@ def sort_clicked():
         return
 
     status.set("Sorting files...")
+    is_sorting = True
+
+    thread = threading.Thread(target=run_sort, args=(selected_location,))
+    thread.start()
+
+def run_sort(selected_location):
+
+    global is_sorting
 
     count, skip, extensions, failed_folders, failed_files = sort_files(selected_location)
+    is_sorting = False
+
+    window.after(0, lambda: finish_sort(count, skip, extensions, failed_folders, failed_files))
+
+def finish_sort(count, skip, extensions, failed_folders, failed_files):
 
     summary = generate_summary(extensions, failed_folders, failed_files)
-
+    
     summary_text.set(summary)
-
+    
     show_result(count, skip, failed_folders, failed_files)
+    
 
 def generate_summary(extensions, failed_folders, failed_files):
 
