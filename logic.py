@@ -45,6 +45,11 @@ def sort_files(selected_location):
     
                 file_source = os.path.join(selected_location, file)
                 file_destination = os.path.join(selected_location, extension, file)
+
+                if os.path.exists(file_destination):
+                    skip += 1
+                    logging.info(f"Skipped {file}, already exists in destination")
+                    continue
     
                 try:
                     shutil.move(file_source, file_destination)
